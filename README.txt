@@ -1,1 +1,2 @@
-This is a basic application for teh frist programming assignment
+This is a basic application that allows for people to talk on a website.
+
