@@ -10,9 +10,9 @@ This pulls the latest image of MySQL from DockerHub and creates a MySQL Database
 
 next you will need to open two terminals
 with one terminal go to the frontend directory and run 
-npm i
+```npm i
 npm start
-
+```
 with the other terminal go to the backend directory and run
 npm i
 node server.js
