@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './App.css';  // Import the custom CSS file
 
 const App = () => {
   const [messages, setMessages] = useState([]);
@@ -9,8 +10,6 @@ const App = () => {
 
   useEffect(() => {
     fetchMessages();
-  }, []);
-  useEffect(() => {
     fetchFiles();
   }, []);
 
@@ -49,28 +48,24 @@ const App = () => {
   };
 
   const handleUpload = async () => {
-    if (!file) {
-      return;
-    }
+    if (!file) return;
 
     const fileData = new FormData();
     fileData.append('file', file);
 
     try {
       await axios.post('http://localhost:5000/upload', fileData);
-      alert('File uploaded successfully yippee!!!');
+      alert('File uploaded successfully!');
       fetchFiles();
     } catch (err) {
       console.error('Error uploading file:', err);
-      alert('Error uploading file. No yippees :(');
+      alert('Error uploading file.');
     }
   };
 
   const handleDownload = async (id, filename) => {
     try {
-      const response = await axios.get(`http://localhost:5000/download/${id}`, {
-        responseType: 'blob',
-      });
+      const response = await axios.get(`http://localhost:5000/download/${id}`, { responseType: 'blob' });
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -78,59 +73,61 @@ const App = () => {
       document.body.appendChild(link);
       link.click();
     } catch (err) {
-      console.error('Error downloading file', err);
+      console.error('Error downloading file:', err);
     }
   };
 
-  
-
   return (
-    <div className="p-6 max-w-2xl mx-auto bg-white rounded-lg shadow-md space-y-6">
-      <h1 className="text-3xl font-bold text-center text-gray-800">Public Message Board</h1>
-      <div className="space-y-4">
+    <div className="app-container">
+      <h1 className="heading">Public Message Board</h1>
+
+      <div className="message-form">
         <textarea
-          className="w-full p-4 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          className="message-input"
           rows="4"
           placeholder="Write your message..."
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
         ></textarea>
-        <button
-          className="w-full py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-          onClick={handleSendMessage}
-        >
-          Send Message
-        </button>
+        <button className="send-btn" onClick={handleSendMessage}>Send Message</button>
       </div>
-      <div className="divide-y divide-gray-200">
+
+      <div className="messages-list">
         {messages.length > 0 ? (
           messages.map((message) => (
-            <div key={message.id} className="py-4">
-              <p className="text-gray-700">{message.content}</p>
-              <small className="text-gray-500">
+            <div key={message.id} className="message-item">
+              <p className="message-content">{message.content}</p>
+              <small className="message-timestamp">
                 {new Date(message.created_at).toLocaleString()}
               </small>
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-500">No messages yet. Be the first to post!</p>
+          <p className="no-messages">No messages yet. Be the first to post!</p>
         )}
       </div>
-      <div>
-      <h1>File Upload and Download</h1>
-      <input type="file" onChange={handleFileChange} />
-      <button onClick={handleUpload}>Upload</button>
-      <h2>Files:</h2>
-      <ul>
-        {files.map((file) => (
-          <li key={file.id}>
-            {file.name} <button onClick={() => handleDownload(file.id, file.name)}>Download</button>
-          </li>
-        ))}
-      </ul>
+
+      <div className="file-section">
+        <h2 className="file-heading">File Upload and Download</h2>
+        <input type="file" className="file-input" onChange={handleFileChange} />
+        <button className="upload-btn" onClick={handleUpload}>Upload</button>
+
+        <h3 className="file-list-heading">Files:</h3>
+        <ul className="file-list">
+          {files.map((file) => (
+            <li key={file.id} className="file-item">
+              {file.name}
+              <button
+                className="download-btn"
+                onClick={() => handleDownload(file.id, file.name)}
+              >
+                Download
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
-    </div>
-    
   );
 };
 
